@@ -1,0 +1,16 @@
+- name: Instalar eines
+  hosts: all
+  become: true
+  gather_facts: true
+  
+  tasks:
+
+  - name: Instalar dependencies
+    ansible.builtin.apt:
+      pkg:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+
