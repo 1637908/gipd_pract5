@@ -12,5 +12,25 @@
         - ca-certificates
         - curl
         - software-properties-common
+      update_cache: yes
+  
+  - name: Afegir clau GPG docker
+    ansible.builtin.apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg 
 
+  - name: Afegir repositori docker
+    ansible.builtin.apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu stable
+      state: present
+      update_cache: yes
 
+  - name: Instalar docker
+    ansible.builtin.apt:
+      pkg:
+        - docker-ce
+        - docker-ce-cli 
+        - containerd.io 
+        - docker-buildx-plugin 
+        - docker-compose-plugin
+      state: latest
+      update_cache: true
