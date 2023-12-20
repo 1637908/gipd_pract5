@@ -7,34 +7,35 @@
 
   - name: Instalar dependencies
     ansible.builtin.apt:
-      pkg:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - software-properties-common
-      update_cache: yes
-  
+      name: "{{ item }}"
+      state: present
+    loop:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      
   - name: Afegir clau GPG docker
     ansible.builtin.apt_key:
       url: https://download.docker.com/linux/ubuntu/gpg 
 
   - name: Afegir repositori docker
     ansible.builtin.apt_repository:
-      repo: deb https://download.docker.com/linux/ubuntu stable
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
       state: present
-      update_cache: yes
 
   - name: Instalar docker
     ansible.builtin.apt:
-      pkg:
-        - docker-ce
-        - docker-ce-cli 
-        - containerd.io 
-        - docker-buildx-plugin 
-        - docker-compose-plugin
-      state: latest
-      update_cache: true
-
+      name: "{{ item }}"
+      state: present
+      update_cache: yes
+    with_items:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - docker-ce
+      
   - name: Afegir clau GPG kubernetes
     ansible.builtin.apt_key:
       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg 
@@ -43,19 +44,18 @@
     ansible.builtin.apt_repository:
       repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
       state: present
-      update_cache: yes
       
-   - name: Instalar kubernetes
-     ansible.builtin.apt:
-       pkg:
-         - kubeadm
-         - kubectl
-         - kubelet
-       state: latest
-       update_cache: true
+  - name: Instalar kubernetes
+    ansible.builtin.apt:
+      pkg:
+        - kubeadm
+        - kubectl
+        - kubelet
+      state: present
+      update_cache: true
 
-    - name: Instalar minikube
-      ansible.builtin.shell: |
-       curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-       chmod +x minikube
-       sudo mv minikube /usr/local/bin/
+  - name: Instalar minikube
+    ansible.builtin.shell: |
+     curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+     chmod +x minikube
+     sudo mv minikube /usr/local/bin/
