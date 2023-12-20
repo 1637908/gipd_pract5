@@ -53,3 +53,12 @@ data "opennebula_security_group" "default" {
 data "opennebula_template" "default" {
   name = "Ubu22.04v1.4-GIxPD"
 }
+
+resource "local_file" "inventari" {
+  content = templatefile("${path.module}/inventari.tpl", {
+  vm_ips = opennebula_virtual_machine.mv[*].nic[0].computed_ip})
+  
+  filename = "${path.module}/hosts"
+  
+  depends_on = [opennebula_virtual_machine.mv]
+}
